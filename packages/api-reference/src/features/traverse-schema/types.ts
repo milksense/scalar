@@ -14,6 +14,7 @@ export type TagsMap = Map<string, { tag: TagObject; entries: TraversedEntry[] }>
 
 /** Description entry returned from traversing the document */
 export type TraversedDescription = {
+  type: 'TraversedDescription'
   id: string
   title: string
   children?: TraversedDescription[]
@@ -67,3 +68,6 @@ export type TraversedEntry =
 export type TraverseSpecOptions = {
   config: Ref<ApiReferenceConfiguration>
 } & Pick<UseNavState, 'getHeadingId' | 'getModelId' | 'getOperationId' | 'getSectionId' | 'getTagId' | 'getWebhookId'>
+
+export const isDescription = (entry: TraversedEntry): entry is TraversedDescription =>
+  'type' in entry && entry.type === 'TraversedDescription'

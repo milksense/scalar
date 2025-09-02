@@ -42,12 +42,7 @@ const onIdle = (cb: () => void) => {
   } else if ('requestIdleCallback' in window) {
     setTimeout(() => window.requestIdleCallback(cb), lazyTimeout)
   } else {
-    setTimeout(() => {
-      nextTick(() => {
-        cb()
-      }),
-        lazyTimeout ?? DEFAULT_LAZY_TIMEOUT
-    })
+    setTimeout(() => nextTick(() => cb()), lazyTimeout ?? DEFAULT_LAZY_TIMEOUT)
   }
 }
 
@@ -60,7 +55,9 @@ if (isLazy) {
     readyToRender.value = true
 
     if (id) {
-      nextTick(() => lazyBus.emit({ loaded: id, save }))
+      nextTick(() => {
+        lazyBus.emit({ loaded: id, save })
+      })
     }
   })
 } else if (id) {

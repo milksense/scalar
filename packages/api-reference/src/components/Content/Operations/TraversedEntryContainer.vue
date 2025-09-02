@@ -8,6 +8,7 @@ import { computed } from 'vue'
 
 import { getCurrentIndex } from '@/components/Content/Operations/get-current-index'
 import { useSidebar } from '@/features/sidebar'
+import { isDescription } from '@/features/traverse-schema/types'
 import { useNavState } from '@/hooks/useNavState'
 import type { ClientOptionGroup } from '@/v2/blocks/scalar-request-example-block/types'
 
@@ -65,12 +66,12 @@ const { hash } = useNavState()
 
 /** The index of the root entry */
 const rootIndex = computed(() =>
-  getCurrentIndex(hash.value, items.value.entries),
+  getCurrentIndex(hash.value, traversedEntries.value),
 )
 </script>
 
 <template>
-  <div v-if="items.entries.length && activeCollection">
+  <div v-if="traversedEntries.length && activeCollection">
     <!-- Use recursive component for cleaner rendering -->
     <TraversedEntry
       :activeCollection
