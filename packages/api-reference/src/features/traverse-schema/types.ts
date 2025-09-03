@@ -56,6 +56,21 @@ export type TraversedWebhook = {
   webhook: OperationObject
 }
 
+/** Webhooks section entry */
+export type TraversedWebhooksSection = {
+  id: string
+  title: string
+  isWebhooks: true
+  children: TraversedWebhook[]
+}
+
+/** Models section entry */
+export type TraversedModelsSection = {
+  id: string
+  title: string
+  children: TraversedSchema[]
+}
+
 /** Entries returned from traversing the document */
 export type TraversedEntry =
   | TraversedDescription
@@ -63,6 +78,8 @@ export type TraversedEntry =
   | TraversedSchema
   | TraversedTag
   | TraversedWebhook
+  | TraversedWebhooksSection
+  | TraversedModelsSection
 
 /** Options for traversing the spec */
 export type TraverseSpecOptions = {
