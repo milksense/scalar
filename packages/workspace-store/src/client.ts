@@ -15,7 +15,6 @@ import { extensions } from '@/schemas/extensions'
 import { type InMemoryWorkspace, InMemoryWorkspaceSchema } from '@/schemas/inmemory-workspace'
 import { defaultReferenceConfig } from '@/schemas/reference-config'
 import { coerceValue } from '@/schemas/typebox-coerce'
-import { OpenAPIDocumentSchema as OpenAPIDocumentSchemaLoose } from '@/schemas/v3.1/loose/openapi-document'
 import {
   OpenAPIDocumentSchema as OpenAPIDocumentSchemaStrict,
   type OpenApiDocument,
@@ -87,7 +86,7 @@ type WorkspaceDocumentMetaInput = {
   /** Optional configuration options */
   config?: DocumentConfiguration
   /** Overrides for the document */
-  overrides?: InMemoryWorkspace['overrides'][string]
+  overrides?: PartialDeep<OpenApiDocument>
   /** Optional custom fetch implementation to use when retrieving the document. By default the global fetch implementation will be used */
   fetch?: (input: string | URL | globalThis.Request, init?: RequestInit) => Promise<Response>
 }
@@ -915,7 +914,7 @@ export const createWorkspaceStore = (workspaceProps?: WorkspaceProps): Workspace
       )
     },
     rebaseDocument: (documentName, newDocumentOrigin, resolvedConflicts) => {
-      const newOrigin = coerceValue(OpenAPIDocumentSchemaLoose, upgrade(newDocumentOrigin).specification)
+      const newOrigin = upgrade(newDocumentOrigin).specification
 
       const originalDocument = originalDocuments[documentName]
       const intermediateDocument = intermediateDocuments[documentName]
