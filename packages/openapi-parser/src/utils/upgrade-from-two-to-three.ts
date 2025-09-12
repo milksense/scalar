@@ -41,6 +41,29 @@ export function upgradeFromTwoToThree(originalSpecification: UnknownObject) {
     return specification
   }
 
+  console.log(specification)
+
+  // Rewrite $refs to definitions
+  specification = traverse(specification, (schema) => {
+    console.log('schema', schema)
+    // Rewrite $refs to components
+    if (typeof schema.$ref === 'string') {
+      console.log('schema.$ref', schema.$ref)
+      if (schema.$ref.startsWith('#/definitions/')) {
+        schema.$ref = schema.$ref.replace(/^#\/definitions\//, '#/components/schemas/')
+      } else if (schema.$ref.startsWith('#/parameters/')) {
+        console.log('halo')
+        schema.$ref = schema.$ref.replace(/^#\/parameters\//, '#/components/parameters/')
+      } else if (schema.$ref.startsWith('#/requestBodies/')) {
+        schema.$ref = schema.$ref.replace(/^#\/requestBodies\//, '#/components/requestBodies/')
+      } else if (schema.$ref.startsWith('#/responses/')) {
+        schema.$ref = schema.$ref.replace(/^#\/responses\//, '#/components/responses/')
+      }
+    }
+
+    return schema
+  })
+
   // Servers
   if (specification.host) {
     const schemes =
@@ -65,16 +88,6 @@ export function upgradeFromTwoToThree(originalSpecification: UnknownObject) {
     })
 
     delete specification.definitions
-
-    // Rewrite $refs to definitions
-    specification = traverse(specification, (schema) => {
-      // Rewrite $refs to components
-      if (typeof schema.$ref === 'string' && schema.$ref.startsWith('#/definitions/')) {
-        schema.$ref = schema.$ref.replace(/^#\/definitions\//, '#/components/schemas/')
-      }
-
-      return schema
-    })
   }
 
   // Transform file type to string with binary format
@@ -90,6 +103,7 @@ export function upgradeFromTwoToThree(originalSpecification: UnknownObject) {
   if (Object.hasOwn(specification, 'parameters')) {
     console.log('parameters', specification.parameters)
     specification.components ??= {}
+    const components = specification.components as OpenAPIV3.ComponentsObject
 
     const params = {}
     const bodyParams = {}
@@ -106,12 +120,15 @@ export function upgradeFromTwoToThree(originalSpecification: UnknownObject) {
       }
     }
 
+    console.log('params', params)
+    console.log('bodyParams', bodyParams)
+
     if (Object.keys(params).length > 0) {
-      ;(specification.components as UnknownObject).parameters = params
+      components.parameters = params
     }
 
     if (Object.keys(bodyParams).length > 0) {
-      ;(specification.components as UnknownObject).requestBodies = bodyParams
+      components.requestBodies = bodyParams
     }
 
     delete specification.parameters

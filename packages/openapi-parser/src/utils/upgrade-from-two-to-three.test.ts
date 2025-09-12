@@ -1045,7 +1045,7 @@ describe('upgradeFromTwoToThree', () => {
           },
         },
         Accept: {
-          in: 'body',
+          in: 'header',
           name: 'Accept',
           required: true,
           schema: {
@@ -1089,7 +1089,17 @@ describe('upgradeFromTwoToThree', () => {
       },
     ])
 
-    expect(result.components.parameters).toMatchObject({
+    expect(result.components).toMatchObject({
+      parameters: {
+        Accept: {
+          in: 'header',
+          name: 'Accept',
+          required: true,
+          schema: {
+            type: 'string',
+          },
+        },
+      },
       requestBodies: {
         Body: {
           content: {
@@ -1103,10 +1113,6 @@ describe('upgradeFromTwoToThree', () => {
           required: true,
         },
         'content type': {
-          content: { 'application/xml': { schema: { type: 'string' } } },
-          required: true,
-        },
-        Accept: {
           content: { 'application/xml': { schema: { type: 'string' } } },
           required: true,
         },
