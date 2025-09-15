@@ -1,15 +1,16 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 namespace Scalar.AspNetCore.Microsoft;
 
 #if NET10_0_OR_GREATER
-internal sealed class ScalarDocumentProvider(IServiceProvider serviceProvider) : IScalarDocumentProvider
+internal sealed class ScalarDocumentProvider : IScalarDocumentProvider
 {
-    public async Task<string> GetDocumentContentAsync(string documentName, CancellationToken cancellationToken)
+    public async Task<string> GetDocumentContentAsync(string documentName, HttpContext httpContext, CancellationToken cancellationToken)
     {
-        var documentProvider = serviceProvider.GetKeyedService<IOpenApiDocumentProvider>(documentName);
-        var openApiOptions = serviceProvider.GetRequiredService<IOptionsMonitor<OpenApiOptions>>().Get(documentName);
+        var documentProvider = httpContext.RequestServices.GetKeyedService<IOpenApiDocumentProvider>(documentName);
+        var openApiOptions = httpContext.RequestServices.GetRequiredService<IOptionsSnapshot<OpenApiOptions>>().Get(documentName);
         if (documentProvider is null)
         {
             throw new InvalidOperationException($"No OpenAPI document provider found for document name '{documentName}'.");

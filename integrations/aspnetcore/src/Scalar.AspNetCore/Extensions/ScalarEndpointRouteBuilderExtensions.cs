@@ -160,7 +160,7 @@ public static class ScalarEndpointRouteBuilderExtensions
             Dictionary<string, string>? documentContents = null;
             if (documentProvider is not null)
             {
-                documentContents = await LoadDocumentContentsAsync(documentProvider, options.Documents, cancellationToken);
+                documentContents = await LoadDocumentContentsAsync(documentProvider, httpContext, options.Documents, cancellationToken);
             }
 
             var configuration = options.ToScalarConfiguration(documentContents);
@@ -266,20 +266,13 @@ public static class ScalarEndpointRouteBuilderExtensions
         return redirectUrl is not null;
     }
 
-    /// <summary>
-    /// Loads document contents for all configured documents using the IScalarDocumentProvider.
-    /// </summary>
-    /// <param name="documentProvider">The document provider to use for loading content.</param>
-    /// <param name="documents">The list of documents to load content for.</param>
-    /// <param name="cancellationToken">The cancellation token.</param>
-    /// <returns>A dictionary containing document contents keyed by document name.</returns>
-    private async static Task<Dictionary<string, string>> LoadDocumentContentsAsync(IScalarDocumentProvider documentProvider, List<ScalarDocument> documents, CancellationToken cancellationToken)
+    private async static Task<Dictionary<string, string>> LoadDocumentContentsAsync(IScalarDocumentProvider documentProvider, HttpContext httpContext, List<ScalarDocument> documents, CancellationToken cancellationToken)
     {
         var documentContents = new Dictionary<string, string>();
 
         foreach (var document in documents)
         {
-            var content = await documentProvider.GetDocumentContentAsync(document.Name, cancellationToken);
+            var content = await documentProvider.GetDocumentContentAsync(document.Name, httpContext, cancellationToken);
             documentContents[document.Name] = content;
         }
 
