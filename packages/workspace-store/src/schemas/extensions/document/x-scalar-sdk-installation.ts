@@ -1,6 +1,9 @@
 import type { Static } from '@scalar/typebox'
 import { Type } from '@scalar/typebox'
 
+/**
+ * Allow custom SDK installation instructions to be added to the API documentation.
+ */
 export const XScalarSdkInstallationSchema = Type.Object({
   'x-scalar-sdk-installation': Type.Optional(
     Type.Array(
